@@ -1,4 +1,5 @@
 <?php
+// Includi il file di configurazione
 require_once('config.php');
 ?>
 
@@ -9,7 +10,7 @@ require_once('config.php');
     <div class="container">
         <div class="mt-4">
             <?php
-            // Controlla se il parametro "view" è presente nell'URL
+            // Controlla se il parametro "table" è presente nell'URL
             if (isset($_GET['table'])) {
                 $tableName = $_GET['table'];
 
@@ -21,22 +22,25 @@ require_once('config.php');
                 if ($result->num_rows > 0) {
                     echo "<h2 class='mb-4'>Contenuto della tabella: $tableName</h2>";
 
+                    // Form per aggiungere un nuovo record alla tabella
                     echo "<form action='aggiungi.php?table=$tableName' method='post'>";
                     $result_add = $conn->query($query);
+
+                    // Aggiungi campi nascosti per ciascuna colonna della tabella
                     while ($fieldInfo_new = $result_add->fetch_field()) {
                         echo "<input type='hidden' name='$fieldInfo_new->name'>";
                     }
-                    echo "<button type='submit' class='btn btn-success'>Aggiungi record</button>";
 
+                    echo "<button type='submit' class='btn btn-success'>Aggiungi record</button>";
                     echo "</form><br>";
                     
+                    // Tabella per visualizzare i dati della tabella specificata
                     echo "<div class='table-responsive'>";
                     echo "<table class='table table-bordered table-striped'>";
                     echo "<thead class='thead-dark'>";
 
                     // Intestazione della tabella con i nomi delle colonne
                     echo "<tr>";
-
                     while ($fieldInfo = $result->fetch_field()) {
                         echo "<th scope='col'>$fieldInfo->name</th>";
                     }
@@ -44,7 +48,6 @@ require_once('config.php');
                     // Aggiungi le colonne "Modifica" ed "Elimina"
                     echo "<th scope='col'>Modifica</th>";
                     echo "<th scope='col'>Elimina</th>";
-
                     echo "</tr>";
                     echo "</thead>";
                     echo "<tbody>";
@@ -58,11 +61,11 @@ require_once('config.php');
                             echo "<td>$value</td>";
                         }
 
-                        // Aggiungi il form per la modifica
+                        // Form per la modifica di un record
                         echo "<td>
                             <form action='modifica.php?table=$tableName' method='post'>";
 
-                        // Iterazione sui valori delle colonne per il form di modifica
+                        // Aggiungi campi nascosti per ciascuna colonna del record
                         foreach ($row as $column => $value) {
                             echo "<input type='hidden' name='$column' value='$value'>";
                         }
@@ -71,10 +74,11 @@ require_once('config.php');
                             </form>
                         </td>";
 
-                        // Aggiungi il form per l'eliminazione
+                        // Form per l'eliminazione di un record
                         echo "<td>
                             <form action='elimina.php?table=$tableName' method='post'>";
 
+                        // Aggiungi campi nascosti per ciascuna colonna del record
                         foreach ($row as $column => $value) {
                             echo "<input type='hidden' name='$column' value='$value'>";
                         }
@@ -91,18 +95,21 @@ require_once('config.php');
                     echo "</div>";
                 } else {
                     echo "<p>Nessun dato presente nella tabella: $tableName</p>";
+
+                    // Form per aggiungere un nuovo record alla tabella
                     echo "<form action='aggiungi.php?table=$tableName' method='post'>";
                     $result_add = $conn->query($query);
+
+                    // Aggiungi campi nascosti per ciascuna colonna della tabella
                     while ($fieldInfo_new = $result_add->fetch_field()) {
                         echo "<input type='hidden' name='$fieldInfo_new->name'>";
                     }
-                    echo "<button type='submit' class='btn btn-success'>Aggiungi record</button>";
 
+                    echo "<button type='submit' class='btn btn-success'>Aggiungi record</button>";
                     echo "</form><br>";
                 }
             } else {
                 echo "<p>Parametro 'table' mancante nell'URL.</p>";
-                
             }
 
             // Chiudi la connessione al database
