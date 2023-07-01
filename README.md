@@ -1,5 +1,3 @@
-# raw-phpmyadmin
-
 # Applicativo di gestione del database
 
 Questo applicativo è stato sviluppato per consentire la gestione di un database tramite un'interfaccia web. Fornisce funzionalità per visualizzare, modificare ed eliminare record all'interno delle tabelle del database.
