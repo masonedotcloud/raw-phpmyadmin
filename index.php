@@ -51,6 +51,7 @@ function printTableList($conn, $dbname)
             printTable($tableName, $conn, $dbname);
         }
     } else {
+        // Messaggio di errore se la query non ha avuto successo
         echo "<div class='alert alert-danger' role='alert'>Errore durante l'ottenimento della lista delle tabelle: " . $conn->error . "</div>";
     }
 }

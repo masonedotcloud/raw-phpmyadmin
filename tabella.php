@@ -2,6 +2,7 @@
 // Includi il file di configurazione
 require_once('config.php');
 
+// Funzione per stampare il contenuto della tabella
 function printTableContent($conn, $tableName)
 {
     // Query per ottenere il contenuto della tabella specificata
@@ -12,6 +13,7 @@ function printTableContent($conn, $tableName)
     if ($result->num_rows > 0) {
         echo "<h2 class='mb-4'>Contenuto della tabella: $tableName</h2>";
 
+        // Link per aggiungere un nuovo record alla tabella
         echo "<p><a href='aggiungi.php?table=$tableName' class='btn btn-success'>Aggiungi record</a></p>";
 
         // Tabella per visualizzare i dati della tabella specificata
@@ -25,7 +27,7 @@ function printTableContent($conn, $tableName)
             echo "<th scope='col'>$fieldInfo->name</th>";
         }
 
-        // Aggiungi le colonne "Modifica" ed "Elimina"
+        // Aggiunta delle colonne "Modifica" ed "Elimina"
         echo "<th scope='col'>Modifica</th>";
         echo "<th scope='col'>Elimina</th>";
         echo "</tr>";
@@ -45,7 +47,7 @@ function printTableContent($conn, $tableName)
             echo "<td>
                     <form action='modifica.php?table=$tableName' method='post'>";
 
-            // Aggiungi campi nascosti per ciascuna colonna del record
+            // Aggiunta di campi nascosti per ciascuna colonna del record
             foreach ($row as $column => $value) {
                 echo "<input type='hidden' name='$column' value='$value'>";
             }
@@ -58,7 +60,7 @@ function printTableContent($conn, $tableName)
             echo "<td>
                     <form action='elimina.php?table=$tableName' method='post'>";
 
-            // Aggiungi campi nascosti per ciascuna colonna del record
+            // Aggiunta di campi nascosti per ciascuna colonna del record
             foreach ($row as $column => $value) {
                 echo "<input type='hidden' name='$column' value='$value'>";
             }
@@ -80,7 +82,7 @@ function printTableContent($conn, $tableName)
         echo "<form action='aggiungi.php?table=$tableName' method='post'>";
         $result_add = $conn->query($query);
 
-        // Aggiungi campi nascosti per ciascuna colonna della tabella
+        // Aggiunta di campi nascosti per ciascuna colonna della tabella
         while ($fieldInfo_new = $result_add->fetch_field()) {
             echo "<input type='hidden' name='$fieldInfo_new->name'>";
         }

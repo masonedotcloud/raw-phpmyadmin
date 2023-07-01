@@ -4,6 +4,7 @@ require_once('config.php');
 
 function getFieldInfo($conn, $tableName)
 {
+    // Query per ottenere le informazioni sui campi della tabella corrente
     $query = "DESCRIBE $tableName";
     $result = $conn->query($query);
     if ($result) {
@@ -19,15 +20,16 @@ function getFieldInfo($conn, $tableName)
 
 function isFieldRequired($fieldInfo)
 {
+    // Verifica se il campo è obbligatorio
     $isNullable = ($fieldInfo['Null'] !== 'NO');
     $hasDefault = ($fieldInfo['Default'] !== null);
     $isAutoIncrement = (strpos($fieldInfo['Extra'], 'auto_increment') !== false);
     return !($isNullable || $hasDefault || $isAutoIncrement);
 }
 
-
 function printFieldInput($fieldInfo)
 {
+    // Stampa l'input per il campo specificato
     $fieldName = $fieldInfo['Field'];
     $fieldType = $fieldInfo['Type'];
 
@@ -57,7 +59,6 @@ function printFieldInput($fieldInfo)
     echo "<small class='text-muted'>($fieldType)</small>";
     echo "</div>";
 }
-
 
 ?>
 
@@ -91,9 +92,11 @@ function printFieldInput($fieldInfo)
                 echo "<button type='submit' class='btn btn-success'>Aggiungi record</button>";
                 echo "</form>";
             } else {
+                // Mostra un messaggio di errore se non è possibile ottenere le informazioni sui campi della tabella
                 echo "<div class='alert alert-danger' role='alert'>Errore durante l'ottenimento delle informazioni sui campi della tabella: " . $conn->error . "</div>";
             }
         } else {
+            // Mostra un messaggio se il parametro 'table' manca nell'URL
             echo "<p>Parametro 'table' mancante nell'URL.</p>";
         }
         ?>

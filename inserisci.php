@@ -1,7 +1,9 @@
 <?php
+// Includi il file di configurazione
 require_once('config.php');
 include_once('head.php');
 
+// Funzione per ottenere i valori predefiniti dei campi dalla descrizione della tabella
 function getFieldDefaultValues($result)
 {
     $defaultValues = array();
@@ -12,20 +14,24 @@ function getFieldDefaultValues($result)
         $isNullable = ($row['Null'] === 'YES');
         $fieldType = $row['Type'];
 
+        // Verifica se il campo non è nullable ma non ha un valore predefinito
         if (!$isNullable && $defaultValue === null) {
             $mandatoryFields[] = $fieldName;
         }
 
+        // Formatta il valore predefinito per i campi di tipo data
         if (strpos($fieldType, 'date') !== false && $defaultValue !== null) {
             $defaultValue = formatDate($defaultValue);
         }
 
+        // Aggiungi il valore predefinito all'array
         $defaultValues[$fieldName] = $defaultValue;
     }
 
     return $defaultValues;
 }
 
+// Funzione per inserire un nuovo record nella tabella
 function insertRecord($conn, $tableName, $fields, $values)
 {
     $fieldsString = implode(', ', $fields);
@@ -38,6 +44,7 @@ function insertRecord($conn, $tableName, $fields, $values)
     $valuesString = "'" . implode("', '", $values) . "'";
     $insertQuery = "INSERT INTO $tableName ($fieldsString) VALUES ($valuesString)";
 
+    // Esegui la query di inserimento
     if ($conn->query($insertQuery) === TRUE) {
         return true;
     } else {
@@ -45,13 +52,14 @@ function insertRecord($conn, $tableName, $fields, $values)
     }
 }
 
-
+// Funzione per formattare una data nel formato corretto
 function formatDate($date)
 {
     $formattedDate = date('Y-m-d', strtotime($date));
     return $formattedDate !== false ? $formattedDate : null;
 }
 
+// Funzione per visualizzare un messaggio
 function displayMessage($type, $message)
 {
     echo "<div class='container'>";
@@ -70,6 +78,7 @@ if (isset($_GET['table'])) {
     $result = $conn->query($query);
 
     if ($result) {
+        // Ottieni i valori predefiniti dei campi
         $defaultValues = getFieldDefaultValues($result);
 
         // Controlla se l'array $_POST contiene dei dati
@@ -77,7 +86,7 @@ if (isset($_GET['table'])) {
             $fields = array();
             $values = array();
 
-            // Modifica: recupera anche le informazioni sul tipo di campo
+            // Recupera anche le informazioni sul tipo di campo
             $fieldTypes = array();
 
             foreach ($result as $row) {
@@ -86,11 +95,14 @@ if (isset($_GET['table'])) {
                 $fieldTypes[$fieldName] = $fieldType;
             }
 
+            // Loop attraverso i dati POST per ottenere i campi e i valori
             foreach ($_POST as $key => $value) {
                 if ($key !== 'table') {
+                    // Verifica se il valore non è vuoto o se esiste un valore predefinito per il campo
                     if (!empty($value) || isset($defaultValues[$key])) {
                         $fields[] = $key;
 
+                        // Se il valore è vuoto, utilizza il valore predefinito
                         if (empty($value) && isset($defaultValues[$key])) {
                             if (strpos($fieldTypes[$key], 'date') !== false) {
                                 $values[] = null;  // Imposta il valore come null per i campi di tipo data vuoti
@@ -98,6 +110,7 @@ if (isset($_GET['table'])) {
                                 $values[] = $defaultValues[$key];
                             }
                         } else {
+                            // Formatta il valore se il campo è di tipo data
                             if (strpos($fieldTypes[$key], 'date') !== false) {
                                 $value = formatDate($value);
                             }
@@ -107,8 +120,9 @@ if (isset($_GET['table'])) {
                 }
             }
 
-
+            // Controlla se ci sono campi da inserire
             if (!empty($fields)) {
+                // Esegue la funzione di inserimento del record
                 if (insertRecord($conn, $tableName, $fields, $values)) {
                     displayMessage('success', 'Record aggiunto con successo.');
                 } else {
@@ -127,4 +141,5 @@ if (isset($_GET['table'])) {
     displayMessage('danger', 'Parametro \'table\' mancante nell\'URL.');
 }
 
+// Includi il file di chiusura
 include_once('foot.php');

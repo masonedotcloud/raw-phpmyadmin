@@ -4,15 +4,12 @@ require_once('config.php');
 
 <?php include_once('head.php');
 
-
 // Controlla se il parametro "table" è presente nell'URL
 if (isset($_GET['table'])) {
     $tableName = $_GET['table'];
 
     // Controlla se l'array $_POST contiene dei dati
     if (!empty($_POST)) {
-
-
         // Costruisci la clausola WHERE utilizzando i campi con il prefisso "_phpmyadmin_manager_private_"
         $whereConditions = "";
         $updateData = array();
@@ -41,21 +38,22 @@ if (isset($_GET['table'])) {
 
         // Esegui la query di aggiornamento
         if ($conn->query($updateQuery) === TRUE) {
+            // Mostra un messaggio di successo
             echo "<div class='container'>";
             echo "<div class='mt-4'>";
             echo "<div class='alert alert-success' role='alert'>Aggiornamento effettuato con successo.</div>";
             echo "</div>";
             echo "</div>";
         } else {
+            // Mostra un messaggio di errore
             echo "<div class='container'>";
             echo "<div class='mt-4'>";
             echo "<div class='alert alert-danger' role='alert'>Errore durante l'aggiornamento: " . $conn->error . "</div>";
             echo "</div>";
             echo "</div>";
         }
-
-
     } else {
+        // Nessun dato presente in $_POST
         echo "<div class='container'>";
         echo "<div class='mt-4'>";
         echo "<div class='alert alert-warning' role='alert'>Nessun dato presente in \$_POST.</div>";
@@ -63,10 +61,12 @@ if (isset($_GET['table'])) {
         echo "</div>";
     }
 } else {
+    // Parametro 'table' mancante nell'URL
     echo "<div class='container'>";
     echo "<div class='mt-4'>";
     echo "<div class='alert alert-danger' role='alert'>Parametro 'table' mancante nell'URL.</div>";
     echo "</div>";
     echo "</div>";
 }
-include_once('foot.php'); 
+
+include_once('foot.php');

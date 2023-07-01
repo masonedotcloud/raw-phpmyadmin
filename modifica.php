@@ -1,14 +1,15 @@
 <?php
+// Includi il file di configurazione
 require_once('config.php');
 include_once('head.php');
 
-// Function to generate form fields
+// Funzione per generare i campi del modulo
 function generateFormField($key, $value, $fieldType)
 {
     echo "<div class='mb-3'>";
     echo "<label for='$key' class='form-label'>$key:</label>";
 
-    // Determine the input type based on the field type
+    // Determina il tipo di input in base al tipo di campo
     $inputType = 'text';
     if (strpos($fieldType, 'int') !== false) {
         $inputType = 'number';
@@ -25,19 +26,19 @@ function generateFormField($key, $value, $fieldType)
     echo "<input type='hidden' name='_phpmyadmin_manager_private_$key' value='$value'>";
 }
 
-// Function to check if $_POST data is available
+// Funzione per verificare se ci sono dati disponibili in $_POST
 function isPostDataAvailable()
 {
     return !empty($_POST);
 }
 
-// Function to check if the "table" parameter is present in the URL
+// Funzione per verificare se il parametro "table" è presente nell'URL
 function isTableParameterAvailable()
 {
     return isset($_GET['table']);
 }
 
-// Function to display an error message
+// Funzione per visualizzare un messaggio di errore
 function displayErrorMessage($message)
 {
     echo "<p>$message</p>";
@@ -47,18 +48,18 @@ function displayErrorMessage($message)
 <div class="container">
     <div class="mt-4">
         <?php
-        // Check if the "table" parameter is available in the URL
+        // Verifica se il parametro "table" è disponibile nell'URL
         if (isTableParameterAvailable()) {
             $tableName = $_GET['table'];
 
             if (isPostDataAvailable()) {
-                ?>
+        ?>
                 <h2 class="mb-4">Modifica Record</h2>
                 <form method="post" action="aggiorna.php?table=<?php echo $tableName; ?>">
                     <?php
-                    // Iterate over the values in $_POST
+                    // Itera sui valori in $_POST
                     foreach ($_POST as $key => $value) {
-                        // Assuming you have the field type information, you can manually set it here
+                        // Supponendo che tu abbia le informazioni sul tipo di campo, puoi impostarlo manualmente qui
                         $fieldType = 'text';
                         generateFormField($key, $value, $fieldType);
                     }
@@ -66,7 +67,7 @@ function displayErrorMessage($message)
 
                     <button type="submit" class="btn btn-primary">Salva modifiche</button>
                 </form>
-                <?php
+        <?php
             } else {
                 displayErrorMessage("Dati mancanti per la modifica del record.");
             }
