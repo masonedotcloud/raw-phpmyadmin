@@ -2,10 +2,8 @@
 require_once('config.php');
 ?>
 
-<?php include_once('head.php') ?>
+<?php include_once('head.php');
 
-<body>
-    <?php include_once('header.php'); 
 
 // Controlla se il parametro "table" è presente nell'URL
 if (isset($_GET['table'])) {
@@ -13,7 +11,7 @@ if (isset($_GET['table'])) {
 
     // Controlla se l'array $_POST contiene dei dati
     if (!empty($_POST)) {
-        require_once('config.php');
+
 
         // Costruisci la clausola WHERE utilizzando i campi con il prefisso "_phpmyadmin_manager_private_"
         $whereConditions = "";
@@ -56,8 +54,7 @@ if (isset($_GET['table'])) {
             echo "</div>";
         }
 
-        // Chiudi la connessione al database
-        $conn->close();
+
     } else {
         echo "<div class='container'>";
         echo "<div class='mt-4'>";
@@ -72,7 +69,4 @@ if (isset($_GET['table'])) {
     echo "</div>";
     echo "</div>";
 }
-?>
-</body>
-
-</html>
+include_once('foot.php'); 

@@ -1,53 +1,80 @@
 <?php
-// Includi il file di configurazione
 require_once('config.php');
+include_once('head.php');
+
+// Function to generate form fields
+function generateFormField($key, $value, $fieldType)
+{
+    echo "<div class='mb-3'>";
+    echo "<label for='$key' class='form-label'>$key:</label>";
+
+    // Determine the input type based on the field type
+    $inputType = 'text';
+    if (strpos($fieldType, 'int') !== false) {
+        $inputType = 'number';
+    } elseif (strpos($fieldType, 'float') !== false || strpos($fieldType, 'double') !== false) {
+        $inputType = 'number';
+    } elseif (strpos($fieldType, 'date') !== false) {
+        $inputType = 'date';
+    } elseif (strpos($fieldType, 'time') !== false) {
+        $inputType = 'date';
+    }
+
+    echo "<input type='$inputType' class='form-control' name='$key' value='$value'>";
+    echo "</div>";
+    echo "<input type='hidden' name='_phpmyadmin_manager_private_$key' value='$value'>";
+}
+
+// Function to check if $_POST data is available
+function isPostDataAvailable()
+{
+    return !empty($_POST);
+}
+
+// Function to check if the "table" parameter is present in the URL
+function isTableParameterAvailable()
+{
+    return isset($_GET['table']);
+}
+
+// Function to display an error message
+function displayErrorMessage($message)
+{
+    echo "<p>$message</p>";
+}
 ?>
 
+<div class="container">
+    <div class="mt-4">
+        <?php
+        // Check if the "table" parameter is available in the URL
+        if (isTableParameterAvailable()) {
+            $tableName = $_GET['table'];
 
-<?php include_once('head.php') ?>
-
-<body>
-    <?php include_once('header.php') ?>
-    <div class="container">
-        <div class="mt-4">
-            <?php
-            // Controllo se il parametro "table" è presente nell'URL
-            if (isset($_GET['table'])) {
-                $tableName = $_GET['table'];
-
-                if (!empty($_POST)) {
-                    ?>
-                    <h2 class="mb-4">Modifica Record</h2>
-                    <form method="post" action="aggiorna.php?table=<?php echo $tableName; ?>">
-                        <?php
-                        // Controllo se l'array $_POST contiene dei dati
-                        if (!empty($_POST)) {
-                            // Iterazione sui valori presenti in $_POST
-                            foreach ($_POST as $key => $value) {
-                                // Generazione del campo del form corrispondente al valore
-                                echo "<div class='mb-3'>";
-                                echo "<label for='$key' class='form-label'>$key:</label>";
-                                echo "<input type='text' class='form-control' name='$key' value='$value'>";
-                                echo "</div>";
-                                echo "<input type='hidden' name='_phpmyadmin_manager_private_$key' value='$value'>";
-                            }
-                        } else {
-                            echo "<p>Nessun dato presente in \$_POST.</p>";
-                        }
-                        ?>
-
-                        <button type="submit" class="btn btn-primary">Salva modifiche</button>
-                    </form>
+            if (isPostDataAvailable()) {
+                ?>
+                <h2 class="mb-4">Modifica Record</h2>
+                <form method="post" action="aggiorna.php?table=<?php echo $tableName; ?>">
                     <?php
-                } else {
-                    echo "<p>Dati mancanti per la modifica del record.</p>";
-                }
-            } else {
-                echo "<p>Parametro 'table' mancante nell'URL.</p>";
-            }
-            ?>
-        </div>
-    </div>
-</body>
+                    // Iterate over the values in $_POST
+                    foreach ($_POST as $key => $value) {
+                        // Assuming you have the field type information, you can manually set it here
+                        $fieldType = 'text';
+                        generateFormField($key, $value, $fieldType);
+                    }
+                    ?>
 
-</html>
+                    <button type="submit" class="btn btn-primary">Salva modifiche</button>
+                </form>
+                <?php
+            } else {
+                displayErrorMessage("Dati mancanti per la modifica del record.");
+            }
+        } else {
+            displayErrorMessage("Parametro 'table' mancante nell'URL.");
+        }
+        ?>
+    </div>
+</div>
+
+<?php include_once('foot.php') ?>

@@ -1,42 +1,103 @@
+<?php
+// Includi il file di configurazione
+require_once('config.php');
+
+function getFieldInfo($conn, $tableName)
+{
+    $query = "DESCRIBE $tableName";
+    $result = $conn->query($query);
+    if ($result) {
+        $fields = array();
+        while ($row = $result->fetch_assoc()) {
+            $fields[] = $row;
+        }
+        return $fields;
+    } else {
+        return false;
+    }
+}
+
+function isFieldRequired($fieldInfo)
+{
+    $isNullable = ($fieldInfo['Null'] !== 'NO');
+    $hasDefault = ($fieldInfo['Default'] !== null);
+    $isAutoIncrement = (strpos($fieldInfo['Extra'], 'auto_increment') !== false);
+    return !($isNullable || $hasDefault || $isAutoIncrement);
+}
+
+
+function printFieldInput($fieldInfo)
+{
+    $fieldName = $fieldInfo['Field'];
+    $fieldType = $fieldInfo['Type'];
+
+    echo "<div class='mb-3'>";
+    echo "<label for='$fieldName'>$fieldName:</label>";
+
+    $inputType = 'text';
+    if (strpos($fieldType, 'int') !== false) {
+        $inputType = 'number';
+    } elseif (strpos($fieldType, 'float') !== false || strpos($fieldType, 'double') !== false) {
+        $inputType = 'number';
+    } elseif (strpos($fieldType, 'date') !== false) {
+        $inputType = 'date';
+    } elseif (strpos($fieldType, 'time') !== false) {
+        $inputType = 'date';
+    }
+
+    // Verifica se il campo ha un valore di default o è autoincrementante
+    $isAutoIncrement = (strpos($fieldInfo['Extra'], 'auto_increment') !== false);
+    $defaultValueAttribute = '';
+
+    if ($fieldInfo['Default'] !== null && !$isAutoIncrement) {
+        $defaultValueAttribute = "value='{$fieldInfo['Default']}'";
+    }
+
+    echo "<input type='$inputType' class='form-control' name='$fieldName' $defaultValueAttribute>";
+    echo "<small class='text-muted'>($fieldType)</small>";
+    echo "</div>";
+}
+
+
+?>
+
 <?php include_once('head.php') ?>
 
-<body>
-    <?php include_once('header.php') ?>
-    <div class="container">
-        <div class="mt-4">
-            <?php
-            // Verifica se il parametro 'table' è presente nell'URL
-            if (isset($_GET['table'])) {
-                $tableName = $_GET['table'];
-            ?>
-                <h2 class="mb-4">Aggiunta record nella tabella: <?php echo $tableName; ?></h2>
-                <form action="inserisci.php?table=<?php echo $tableName; ?>" method="post">
-                    <?php
-                    // Itera sui valori presenti in $_POST
-                    foreach ($_POST as $key => $value) {
-                        // Ignora il campo "table" nell'array $_POST
-                        if ($key === 'table') {
-                            continue;
-                        }
-                    ?>
-                        <div class="mb-3">
-                            <label for="<?php echo $key; ?>"><?php echo $key; ?>:</label>
-                            <input type="text" class="form-control" name="<?php echo $key; ?>" value="<?php echo $value; ?>">
-                        </div>
-                    <?php
-                    }
-                    ?>
-                    <button type="submit" class="btn btn-success">Aggiungi record</button>
-                </form>
-            <?php
-            } else {
-            ?>
-                <p>Parametro 'table' mancante nell'URL.</p>
-            <?php
-            }
-            ?>
-        </div>
-    </div>
-</body>
+<div class="container">
+    <div class="mt-4">
+        <?php
+        if (isset($_GET['table'])) {
+            $tableName = $_GET['table'];
 
-</html>
+            $fields = getFieldInfo($conn, $tableName);
+
+            if ($fields) {
+                $mandatoryFields = array();
+
+                echo "<h2 class='mb-4'>Aggiunta record nella tabella: $tableName</h2>";
+                echo "<form action='inserisci.php?table=$tableName' method='post'>";
+
+                foreach ($fields as $fieldInfo) {
+                    printFieldInput($fieldInfo);
+                    if (isFieldRequired($fieldInfo)) {
+                        $mandatoryFields[] = $fieldInfo['Field'];
+                    }
+                }
+
+                if (!empty($mandatoryFields)) {
+                    echo "<p class='text-danger'>I seguenti campi sono obbligatori: " . implode(', ', $mandatoryFields) . "</p>";
+                }
+
+                echo "<button type='submit' class='btn btn-success'>Aggiungi record</button>";
+                echo "</form>";
+            } else {
+                echo "<div class='alert alert-danger' role='alert'>Errore durante l'ottenimento delle informazioni sui campi della tabella: " . $conn->error . "</div>";
+            }
+        } else {
+            echo "<p>Parametro 'table' mancante nell'URL.</p>";
+        }
+        ?>
+    </div>
+</div>
+
+<?php include_once('foot.php') ?>
