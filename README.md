@@ -65,6 +65,6 @@ Sono benvenuti i contributi per migliorare l'applicativo. Se si desidera contrib
 
 ## Licenza
 
-Questo progetto è distribuito con la licenza [MIT](https://opensource.org/licenses/MIT). Fare riferimento al file `LICENSE` per ulteriori informazioni.
+Questo progetto è distribuito con la licenza [MIT](https://opensource.org/licenses/MIT).
 
 ---
