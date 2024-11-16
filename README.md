@@ -1,4 +1,4 @@
-# Applicativo di gestione del database
+# Raw PHPmyadmin
 
 Questo applicativo è stato sviluppato per consentire la gestione di un database tramite un'interfaccia web. Fornisce funzionalità per visualizzare, modificare ed eliminare record all'interno delle tabelle del database.
 
@@ -59,12 +59,11 @@ Se si riscontrano errori, bug o si desidera suggerire miglioramenti, è possibil
 
  Issues del repository.
 
-## Contributi
-
-Sono benvenuti i contributi per migliorare l'applicativo. Se si desidera contribuire, è possibile aprire una pull request nel repository.
-
 ## Licenza
 
-Questo progetto è distribuito con la licenza [MIT](https://opensource.org/licenses/MIT).
+Questo progetto è distribuito sotto la Licenza MIT - vedi il file [LICENSE](LICENSE) per ulteriori dettagli.
 
----
+
+## Autore
+
+Questo progetto è stato creato da [alessandromasone](https://github.com/alessandromasone).
